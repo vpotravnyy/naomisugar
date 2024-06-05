@@ -60,7 +60,7 @@ export const LibreLinkUpClient = ({
 
       return config;
     },
-    e => e,
+    e => e as unknown,
     { synchronous: true }
   );
 
@@ -186,8 +186,9 @@ export const LibreLinkUpClient = ({
     ) => void,
     interval = 15000
   ) => {
-    let mem: Map<string, LibreCgmData> = new Map();
+    let mem= new Map<string, LibreCgmData> ();
 
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     averageInterval = setInterval(async () => {
       const { current, history } = await read();
       mem.set(current.date.toString(), current);
@@ -197,8 +198,8 @@ export const LibreLinkUpClient = ({
         const averageValue = Math.round(
           memValues.reduce((acc, cur) => acc + cur.value, 0) / amount
         );
-        const averageTrend =
-          trendMap[
+        // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
+        const averageTrend =trendMap[
             parseInt(
               (
                 Math.round(
@@ -220,8 +221,8 @@ export const LibreLinkUpClient = ({
             trend: averageTrend,
             value: averageValue,
             date: current.date,
-            isHigh: current.isHigh,
-            isLow: current.isLow,
+            is_high: current.is_high,
+            is_low: current.is_low,
           },
           memValues,
           history,

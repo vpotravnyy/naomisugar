@@ -8,8 +8,8 @@ export type TrendType =
 
 export type LibreCgmData = {
   value: number;
-  isHigh: boolean;
-  isLow: boolean;
+  is_high: boolean;
+  is_low: boolean;
   trend: TrendType;
   date: Date;
 };

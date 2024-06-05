@@ -28,6 +28,6 @@ export const mapData = ({
   value: Value,
   is_high: isHigh,
   is_low: isLow,
-  trend: getTrend(TrendArrow),
+  trend: getTrend(TrendArrow)!,
   date: toDate(`${FactoryTimestamp} UTC`),
 });

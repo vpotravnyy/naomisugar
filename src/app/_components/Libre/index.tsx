@@ -6,8 +6,8 @@ export default function Libre() {
     const utils = api.useUtils()
     const { data, isError, isLoading } = api.libre.read.useQuery();
     const updateDB = api.libre.update.useMutation({
-        onSuccess: () => {
-            utils.libre.read.invalidate();
+        onSuccess: async () => {
+            await utils.libre.read.invalidate();
         }
     })
 

@@ -37,7 +37,7 @@ export const libreRouter = createTRPCRouter({
   }),
 
   update: publicProcedure.mutation(async ({ ctx }) => {
-    const oldCurrent = await ctx.db.query.libreCurrent.findFirst()!
+    const oldCurrent = await ctx.db.query.libreCurrent.findFirst()
     if (!oldCurrent) return { success: false, error: 'No current data found' };
 
     if (+new Date() - +new Date(oldCurrent.date) < 60 * 1000) {
@@ -45,13 +45,11 @@ export const libreRouter = createTRPCRouter({
     }
 
     const libreClient = LibreLinkUpClient({ username: env.LIBRE_USERNAME, password: env.LIBRE_PASSWORD });
-    let { current, history } = await libreClient.read();
+    const { current, history } = await libreClient.read();
 
-    await ctx.db
-      .update(libreCurrent)
-      .set({ ...current })
+    // eslint-disable-next-line drizzle/enforce-update-with-where
+    await ctx.db.update(libreCurrent).set({ ...current })
       
-  
     await ctx.db
       .insert(libre)
       .values(history)
