@@ -8,6 +8,8 @@ export const env = createEnv({
    */
   server: {
     POSTGRES_URL: z.string().url(),
+    LIBRE_USERNAME: z.string().email(),
+    LIBRE_PASSWORD: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -28,6 +30,8 @@ export const env = createEnv({
    */
   runtimeEnv: {
     POSTGRES_URL: process.env.POSTGRES_URL,
+    LIBRE_USERNAME: process.env.LIBRE_USERNAME,
+    LIBRE_PASSWORD: process.env.LIBRE_PASSWORD,
     NODE_ENV: process.env.NODE_ENV,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },

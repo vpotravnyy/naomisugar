@@ -8,6 +8,9 @@ import {
   serial,
   timestamp,
   varchar,
+  real,
+  boolean,
+  pgEnum
 } from "drizzle-orm/pg-core";
 
 /**
@@ -31,4 +34,28 @@ export const posts = createTable(
   (example) => ({
     nameIndex: index("name_idx").on(example.name),
   })
+);
+
+export const trendEnum = pgEnum('trend', ['SingleDown', 'FortyFiveDown', 'Flat', 'FortyFiveUp', 'SingleUp', 'NotComputable']);
+export const libre = createTable(
+  "libre",
+  {
+    date: timestamp("date").primaryKey(),
+    value: real("value"),
+    is_high: boolean('is_high'),
+    is_low: boolean('is_low'),
+    trend: trendEnum("trend"),
+  }
+);
+
+export const libreCurrent = createTable(
+  "libreCurrent",
+  {
+    id: serial("id").primaryKey(),
+    date: timestamp("date").notNull(),
+    value: real("value"),
+    is_high: boolean('is_high'),
+    is_low: boolean('is_low'),
+    trend: trendEnum("trend"),
+  }
 );
