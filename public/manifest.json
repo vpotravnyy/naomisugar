@@ -1,0 +1,25 @@
+{
+  "name": "NaomiSugar",
+  "short_name": "NaomiSugar",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#fff",
+  "description": "App to view data from LibreLinkUp servers.",
+  "icons": [
+    {
+      "src": "images/naomisugar_144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "images/naomisugar_168.png",
+      "sizes": "168x168",
+      "type": "image/png"
+    },
+    {
+      "src": "images/naomisugar_192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
