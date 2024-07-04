@@ -69,6 +69,9 @@ importers:
         specifier: ^3.23.3
         version: 3.23.8
     devDependencies:
+      '@nivo/scales':
+        specifier: ^0.87.0
+        version: 0.87.0
       '@types/eslint':
         specifier: ^8.56.2
         version: 8.56.10
