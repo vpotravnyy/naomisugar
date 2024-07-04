@@ -1,11 +1,11 @@
-import { z } from "zod";
+import { type SQL, getTableColumns, sql } from "drizzle-orm";
+import type { InferSelectModel } from 'drizzle-orm'
+import type { PgTable } from "drizzle-orm/pg-core";
 import { omit } from "lodash"
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { env } from "~/env";
-import { LibreLinkUpClient } from "~/server/lib/libre";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { libre, libreCurrent } from "~/server/db/schema";
-import { SQL, getTableColumns, sql } from "drizzle-orm";
-import { PgTable } from "drizzle-orm/pg-core";
+import { LibreLinkUpClient } from "~/server/lib/libre";
 
 const buildConflictUpdateColumns = <
   T extends PgTable,
@@ -16,14 +16,17 @@ const buildConflictUpdateColumns = <
 ) => {
   const cls = getTableColumns(table);
   return columns.reduce((acc, column) => {
-    const colName = cls[column]!.name;
+    const colName = cls[column]?.name;
     acc[column] = sql.raw(`excluded.${colName}`);
     return acc;
   }, {} as Record<Q, SQL>);
 };
 
+export type TLibreDataPoint = InferSelectModel<typeof libre>
+export type TLibreResponse = { current: TLibreDataPoint, history: TLibreDataPoint[]}
+
 export const libreRouter = createTRPCRouter({
-  read: publicProcedure.query(async ({ ctx }) => {
+  read: publicProcedure.query(async ({ ctx }): Promise<TLibreResponse> => {
     const current = await ctx.db.query.libreCurrent.findFirst();
     const history = await ctx.db.query.libre.findMany({
       orderBy: (libre, { desc }) => [desc(libre.date)],

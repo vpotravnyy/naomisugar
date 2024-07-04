@@ -3,14 +3,14 @@
 
 import { sql } from "drizzle-orm";
 import {
+  boolean,
   index,
+  pgEnum,
   pgTableCreator,
+  real,
   serial,
   timestamp,
-  varchar,
-  real,
-  boolean,
-  pgEnum
+  varchar
 } from "drizzle-orm/pg-core";
 
 /**
@@ -41,10 +41,10 @@ export const libre = createTable(
   "libre",
   {
     date: timestamp("date").primaryKey(),
-    value: real("value"),
-    is_high: boolean('is_high'),
-    is_low: boolean('is_low'),
-    trend: trendEnum("trend"),
+    value: real("value").notNull(),
+    is_high: boolean('is_high').notNull(),
+    is_low: boolean('is_low').notNull(),
+    trend: trendEnum("trend").notNull(),
   }
 );
 
@@ -53,9 +53,9 @@ export const libreCurrent = createTable(
   {
     id: serial("id").primaryKey(),
     date: timestamp("date").notNull(),
-    value: real("value"),
-    is_high: boolean('is_high'),
-    is_low: boolean('is_low'),
-    trend: trendEnum("trend"),
+    value: real("value").notNull(),
+    is_high: boolean('is_high').notNull(),
+    is_low: boolean('is_low').notNull(),
+    trend: trendEnum("trend").notNull(),
   }
 );
