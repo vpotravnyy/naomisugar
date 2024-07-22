@@ -31,6 +31,7 @@ export const libreRouter = createTRPCRouter({
 	}),
 
 	update: publicProcedure.mutation(async ({ ctx }) => {
+		const transactions = [];
 		const oldCurrent = await ctx.db.query.libreCurrent.findFirst();
 		if (!oldCurrent) return { success: false, error: "No current data found" };
 
@@ -47,8 +48,9 @@ export const libreRouter = createTRPCRouter({
 		});
 		const { current, history } = await libreClient.read();
 
+		console.log("New current value: ", current.value);
 		// eslint-disable-next-line drizzle/enforce-update-with-where
-		await ctx.db.update(libreCurrent).set({ ...current });
+		transactions.push(ctx.db.update(libreCurrent).set({ ...current }));
 
 		const oldHistory = await ctx.db.query.libre.findMany({
 			orderBy: (libre, { desc }) => [desc(libre.date)],
@@ -61,7 +63,10 @@ export const libreRouter = createTRPCRouter({
 		const recentHistory = history.filter(
 			({ date }) => date > lastRecordedHistoryAt,
 		);
-		console.log("New history items to add: ", recentHistory);
+		if (recentHistory.length) {
+			console.log("New history items to add: ", recentHistory);
+			transactions.push(ctx.db.insert(libre).values(recentHistory));
+		}
 
 		const rewrittenHistory = history.reduce(
 			(acc, item) => {
@@ -81,22 +86,22 @@ export const libreRouter = createTRPCRouter({
 
 		if (rewrittenHistory.length) {
 			console.log("History items to rewrite: ", rewrittenHistory);
+			for (const item of rewrittenHistory) {
+				transactions.push(
+					ctx.db
+						.update(libre)
+						.set({
+							value: item.value,
+							is_low: item.is_low,
+							is_high: item.is_high,
+							trend: item.trend,
+						})
+						.where(eq(libre.date, item.date)),
+				);
+			}
 		}
 
-		await Promise.all([
-			ctx.db.insert(libre).values(recentHistory),
-			rewrittenHistory.map((item) =>
-				ctx.db
-					.update(libre)
-					.set({
-						value: item.value,
-						is_low: item.is_low,
-						is_high: item.is_high,
-						trend: item.trend,
-					})
-					.where(eq(libre.date, item.date)),
-			),
-		]);
+		await Promise.all(transactions);
 
 		return { success: true };
 	}),
