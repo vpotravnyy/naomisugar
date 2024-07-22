@@ -7,14 +7,8 @@ import Chart from "./Chart";
 import TooltipContextProvider from "./TooltipContext";
 
 export default function Libre() {
-	const utils = api.useUtils();
 	const { data, isError, isLoading } = api.libre.read.useQuery(undefined, {
 		refetchInterval: 60000,
-	});
-	const updateDB = api.libre.update.useMutation({
-		onSuccess: async () => {
-			await utils.libre.read.invalidate();
-		},
 	});
 
 	if (!data) return null;
