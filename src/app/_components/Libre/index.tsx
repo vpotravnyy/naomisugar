@@ -1,15 +1,33 @@
 "use client";
 
+import { useEffect } from "react";
+import type { TLibreResponse } from "~/server/api/routers/libre";
 import { api } from "~/trpc/react";
 import { AppleIcon, ArrowUpIcon, PencilIcon, SyringeIcon } from "../Icons";
 import Banner from "./Banner";
 import Chart from "./Chart";
 import TooltipContextProvider from "./TooltipContext";
 
+// Sometimes this application is running within Electron wrapper. In this case we can should data to it
+declare global {
+	interface Window {
+		electronAPIs?: {
+			libreData: (data: TLibreResponse) => void;
+		};
+	}
+}
+
 export default function Libre() {
 	const { data, isError, isLoading } = api.libre.read.useQuery(undefined, {
 		refetchInterval: 60000,
 	});
+
+	// Send data to Electron wrapper if it exists
+	useEffect(() => {
+		if (data && window.electronAPIs) {
+			window.electronAPIs.libreData(data);
+		}
+	}, [data]);
 
 	if (!data) return null;
 
