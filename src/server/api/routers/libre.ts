@@ -52,53 +52,18 @@ export const libreRouter = createTRPCRouter({
 		// eslint-disable-next-line drizzle/enforce-update-with-where
 		transactions.push(ctx.db.update(libreCurrent).set({ ...current }));
 
-		const oldHistory = await ctx.db.query.libre.findMany({
+		const lastRecordedHistory = await ctx.db.query.libre.findFirst({
 			orderBy: (libre, { desc }) => [desc(libre.date)],
-			where: (libre, { gte }) => gte(libre.date, ago(HOUR * 2)),
-			limit: 1000,
 		});
 
-		const lastRecordedHistoryAt = oldHistory[0]?.date ?? ago(HOUR * 12);
+		const lastRecordedHistoryAt = lastRecordedHistory?.date ?? ago(HOUR * 24);
 
-		const recentHistory = history.filter(
+		const newHistory = history.filter(
 			({ date }) => date > lastRecordedHistoryAt,
 		);
-		if (recentHistory.length) {
-			console.log("New history items to add: ", recentHistory);
-			transactions.push(ctx.db.insert(libre).values(recentHistory));
-		}
-
-		const rewrittenHistory = history.reduce(
-			(acc, item) => {
-				const matchingOldHistoryItem = oldHistory.find(
-					(oldItem) => oldItem.date === item.date,
-				);
-				if (
-					matchingOldHistoryItem &&
-					matchingOldHistoryItem.value !== item.value
-				) {
-					acc.push(item);
-				}
-				return acc;
-			},
-			[] as typeof history,
-		);
-
-		if (rewrittenHistory.length) {
-			console.log("History items to rewrite: ", rewrittenHistory);
-			for (const item of rewrittenHistory) {
-				transactions.push(
-					ctx.db
-						.update(libre)
-						.set({
-							value: item.value,
-							is_low: item.is_low,
-							is_high: item.is_high,
-							trend: item.trend,
-						})
-						.where(eq(libre.date, item.date)),
-				);
-			}
+		if (newHistory.length) {
+			console.log("New history items to add: ", newHistory);
+			transactions.push(ctx.db.insert(libre).values(newHistory));
 		}
 
 		await Promise.all(transactions);
