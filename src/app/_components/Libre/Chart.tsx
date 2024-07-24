@@ -8,11 +8,16 @@ import {
 	type SliceTooltipProps,
 } from "@nivo/line";
 import type { ScaleLinear } from "@nivo/scales";
+import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
-import type { TLibreDataPoint } from "~/server/api/routers/libre";
+import type { TLibreResponse } from "~/server/api/routers/libre";
 import { type TTooltipData, useSetTooltipData } from "./TooltipContext";
+import prepareChartData from "./prepareChartData";
 
-export type TChartProps = { chartData: TLibreDataPoint[]; className?: string };
+export type TChartProps = {
+	data: TLibreResponse;
+	className?: string;
+};
 
 const LOW = { MIN: 0, MAX: 4 };
 const GREEN = { MIN: 4, MAX: 10 };
@@ -89,9 +94,9 @@ function ActivePoint({
 }
 
 export default function Chart(props: TChartProps) {
-	const data = props.chartData
-		.map(({ date, value, trend }) => ({ x: date, y: value, trend }))
-		.reverse();
+	const data = useMemo(() => {
+		return prepareChartData(props.data);
+	}, [props.data]);
 
 	return (
 		<div className={props.className}>

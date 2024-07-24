@@ -8,45 +8,22 @@ import Banner from "./Banner";
 import Chart from "./Chart";
 import TooltipContextProvider from "./TooltipContext";
 
-// Sometimes this application is running within Electron wrapper. In this case we can should data to it
-declare global {
-	interface Window {
-		electronAPIs?: {
-			libreData: (data: TLibreResponse) => void;
-		};
-	}
-}
-
 export default function Libre() {
 	const { data, isError, isLoading } = api.libre.read.useQuery(undefined, {
 		refetchInterval: 60000,
 	});
 
-	// Send data to Electron wrapper if it exists
-	useEffect(() => {
-		if (data && window.electronAPIs) {
-			window.electronAPIs.libreData(data);
-		}
-	}, [data]);
-
 	if (!data) return null;
-
-	const chartData = data && [
-		data.current,
-		...data.history.filter(
-			({ date }) => new Date(date).getTime() > Date.now() - 12 * 60 * 60 * 1000,
-		),
-	];
 
 	return (
 		<TooltipContextProvider>
 			<div className="flex flex-col h-screen items-center w-full bg-gray-100">
 				<Banner current={data.current} />
 				<section className="flex flex-col items-center flex-1 w-full bg-white">
-					{chartData && (
+					{data && (
 						<Chart
 							className="w-full flex-1 min-h-80 overflow-hidden"
-							chartData={chartData}
+							data={data}
 						/>
 					)}
 					{/* <div className="flex items-center justify-between w-full mt-4">
