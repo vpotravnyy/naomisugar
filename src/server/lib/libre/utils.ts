@@ -1,33 +1,33 @@
-import { TrendType, LibreCgmData } from './types/client';
-import { GlucoseItem } from './types/connection';
+import { LibreCgmData, TrendType } from "./types/client";
+import { GlucoseItem } from "./types/connection";
 
 export const trendMap: TrendType[] = [
-  'NotComputable',
-  'SingleDown',
-  'FortyFiveDown',
-  'Flat',
-  'FortyFiveUp',
-  'SingleUp',
-  'NotComputable',
+	"NotComputable",
+	"SingleDown",
+	"FortyFiveDown",
+	"Flat",
+	"FortyFiveUp",
+	"SingleUp",
+	"NotComputable",
 ];
 
 const getTrend = (
-  trend: number | undefined,
-  defaultTrend: TrendType = 'Flat'
+	trend: number | undefined,
+	defaultTrend: TrendType = "Flat",
 ) => (trend && trendMap[trend] ? trendMap[trend] : defaultTrend);
 
 const toDate = (dateString: string): Date => new Date(dateString);
 
 export const mapData = ({
-  Value,
-  isHigh,
-  isLow,
-  TrendArrow,
-  FactoryTimestamp,
+	Value,
+	isHigh,
+	isLow,
+	TrendArrow,
+	FactoryTimestamp,
 }: GlucoseItem): LibreCgmData => ({
-  value: Value,
-  is_high: isHigh,
-  is_low: isLow,
-  trend: getTrend(TrendArrow)!,
-  date: toDate(`${FactoryTimestamp} UTC`),
+	value: Value,
+	is_high: isHigh,
+	is_low: isLow,
+	trend: getTrend(TrendArrow),
+	date: toDate(`${FactoryTimestamp} UTC`),
 });
