@@ -12,6 +12,7 @@ export default function Libre() {
 	const { data, isError, isLoading } = api.libre.read.useQuery(undefined, {
 		refetchInterval: 60000,
 	});
+	// const updateDB = api.libre.update.useMutation();
 
 	if (!data) return null;
 
@@ -33,15 +34,15 @@ export default function Libre() {
                     </div> */}
 				</section>
 				{/* <footer className="flex items-center justify-center w-full p-4 bg-gray-200">
-                    <button
-                        type='submit'
-                        className="flex items-center space-x-2"
-                        disabled={updateDB.isPending}
-                        onClick={() => updateDB.mutate()}
-                    >
-                        {updateDB.isPending ? "Updating..." : "Update"}
-                    </button>
-                </footer> */}
+					<button
+						type="submit"
+						className="flex items-center space-x-2"
+						disabled={updateDB.isPending}
+						onClick={() => updateDB.mutate()}
+					>
+						{updateDB.isPending ? "Updating..." : "Update"}
+					</button>
+				</footer> */}
 			</div>
 		</TooltipContextProvider>
 	);
